@@ -25,7 +25,7 @@ jobs:
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
           BASE_REPOSITORY: ${{ github.repository }}
         run: |
-          if [[ "$HEAD_BRANCH" != feature/?* || "$HEAD_REPOSITORY" != "$BASE_REPOSITORY" ]]; then
-            echo "::error::Open pull requests to master from a feature/<name> branch in this repository."
+          if [[ "$HEAD_REPOSITORY" != "$BASE_REPOSITORY" || ( "$HEAD_BRANCH" != feature/?* && "$HEAD_BRANCH" != fix/?* ) ]]; then
+            echo "::error::Open pull requests to master from a feature/<name> or fix/<name> branch in this repository."
             exit 1
           fi
