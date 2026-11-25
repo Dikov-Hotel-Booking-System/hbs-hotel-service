@@ -1,7 +1,7 @@
 plugins {
 	java
-	id("org.springframework.boot") version "4.1.2"
-	id("io.spring.dependency-management") version "1.1.7"
+	alias(libs.plugins.spring.boot)
+	alias(libs.plugins.spring.dependency.management)
 }
 
 group = "ru.mephi"
@@ -10,7 +10,7 @@ description = "Hotel and room management service"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
 	}
 }
 
@@ -18,24 +18,23 @@ repositories {
 	mavenCentral()
 }
 
-extra["springCloudVersion"] = "2025.1.4"
-
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-liquibase")
-	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-	runtimeOnly("org.postgresql:postgresql")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-junit-jupiter")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation(libs.spring.boot.starter.data.jpa)
+	implementation(libs.spring.boot.starter.liquibase)
+	implementation(libs.spring.boot.starter.security.oauth2.resource.server)
+	implementation(libs.spring.boot.starter.validation)
+	implementation(libs.spring.boot.starter.webmvc)
+	implementation(libs.spring.cloud.starter.netflix.eureka.client)
+	runtimeOnly(libs.postgresql)
+	testImplementation(libs.junit.jupiter)
+	testImplementation(libs.mockito.junit.jupiter)
+	testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 dependencyManagement {
 	imports {
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+		val springCloudBom = libs.spring.cloud.bom.get()
+		mavenBom("${springCloudBom.group}:${springCloudBom.name}:${springCloudBom.versionConstraint.requiredVersion}")
 	}
 }
 
