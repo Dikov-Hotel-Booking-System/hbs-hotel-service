@@ -2,11 +2,10 @@ name: Branch rules
 
 on:
   pull_request_target:
-    branches: [master, develop]
+    branches: [master]
     types: [opened, synchronize, reopened, edited]
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: branch-policy-${{ github.event.pull_request.number }}
@@ -19,30 +18,14 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Validate pull request branches
+      - name: Validate pull request source
         shell: bash
         env:
-          BASE_BRANCH: ${{ github.base_ref }}
           HEAD_BRANCH: ${{ github.head_ref }}
-          BASE_REPOSITORY: ${{ github.repository }}
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPOSITORY: ${{ github.repository }}
         run: |
-          case "$BASE_BRANCH" in
-            master)
-              if [[ "$HEAD_BRANCH" != "develop" || "$HEAD_REPOSITORY" != "$BASE_REPOSITORY" ]]; then
-                echo "::error::Only develop from this repository can be merged into master."
-                exit 1
-              fi
-              ;;
-            develop)
-              if [[ "$HEAD_BRANCH" != feature/?* ]]; then
-                echo "::error::Only feature/<name> branches can be merged into develop."
-                exit 1
-              fi
-              ;;
-            *)
-              echo "::error::Unsupported target branch."
-              exit 1
-              ;;
-          esac
-          echo "Branch policy passed."
+          if [[ "$HEAD_BRANCH" != feature/?* || "$HEAD_REPOSITORY" != "$BASE_REPOSITORY" ]]; then
+            echo "::error::Open pull requests to master from a feature/<name> branch in this repository."
+            exit 1
+          fi
