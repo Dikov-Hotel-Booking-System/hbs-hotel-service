@@ -45,14 +45,14 @@ Dockerfile использует JRE 21 и запускает приложени�
 ## GitHub Actions
 
 Workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) запускается
-при push в `master`, `develop`, `feature/**`, для PR в `master`/`develop`
+при push в `master` и `feature/**`, для PR в `master`
 и вручную через `workflow_dispatch`. Содержимое workflow одинаково
 во всех четырёх репозиториях.
 
-Рабочий поток: `feature/<name>` → PR → `develop` → PR → `master`.
+Рабочий поток: `feature/<name>` → PR → `master`.
 Проверка `Branch policy` отклоняет PR из других исходных веток.
 Правила защиты для GitHub и порядок первоначальной настройки описаны
-в [`.github/BRANCHING.md`](.github/BRANCHING.md).
+в [GitHub Flow](docs/github_flow/index.md).
 
 1. `build` выполняет `test bootJar`: запускает юнит-тесты и собирает JAR.
 2. `docker` получает тот же JAR через artifact и собирает образ с тегом SHA коммита.
