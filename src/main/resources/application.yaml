@@ -3,6 +3,8 @@ spring:
     import: optional:file:./config/application.yaml
   application:
     name: hbs-hotel-service
+  liquibase:
+    change-log: classpath:liquibase/changelog-master.yaml
 
 server:
   port: 8082

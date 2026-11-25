@@ -7,13 +7,14 @@
 ## 📌 Описание
 
 Сервис предназначен для работы с отелями и номерами. На текущем этапе созданы
-стартовый класс Spring Boot, базовая конфигурация, сборка JAR и Docker-образа, а также CI.
+стартовый класс Spring Boot, базовая конфигурация, миграции БД, сборка JAR и Docker-образа, а также CI.
 
 ---
 
 ## 📘 Документация по процессам
 
 - ### [GitHub Flow](docs/github_flow/index.md)
+- ### [Database](docs/database/index.md)
 
 ---
 
@@ -21,7 +22,7 @@
 
 - ☕ Java 21 (язык разработки)
 - 🌱 Spring Boot 4.1.2 и Spring Web MVC (основа приложения)
-- 🐘 PostgreSQL и Spring Data JPA (работа с базой данных)
+- 🐘 PostgreSQL, Spring Data JPA и Liquibase (работа с базой данных и миграции)
 - 🔐 Spring Security OAuth2 Resource Server (зависимости для работы с JWT)
 - ✅ Bean Validation (валидация данных)
 - 🔎 Spring Cloud 2025.1.4 и Eureka Discovery Client (регистрация сервисов)
@@ -70,6 +71,8 @@
    ```shell
    .\gradlew.bat bootRun
    ```
+
+   Liquibase применяет миграции к базе при запуске сервиса.
 
    Порт приложения по умолчанию: `8082`. Его можно изменить в локальном файле настроек.
 

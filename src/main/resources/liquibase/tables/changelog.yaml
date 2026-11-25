@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - include:
+      file: hotels/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: rooms/changelog.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: room_reservations/changelog.yaml
+      relativeToChangelogFile: true
