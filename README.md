@@ -1,63 +1,110 @@
-# hbs-hotel-service
+# 🚀 Hbs-hotel-service
 
-Сервис отелей, номеров и резервирования интервалов Hotel Booking System.
-На этом этапе создан каркас приложения без бизнес-логики.
+> Каркас сервиса отелей и номеров гостиничной системы
 
-Проект сгенерирован через [Spring Initializr](https://start.spring.io): Java 21,
-Spring Boot 4.1.2, Spring Cloud 2025.1.4, Gradle Kotlin DSL. Group: `ru.mephi`,
-пакет: `ru.mephi.hbs.hotel`.
+---
 
-Зависимости: Spring Web MVC, Spring Data JPA, PostgreSQL Driver, Bean Validation,
-OAuth2 Resource Server (Spring Security и JWT), Eureka Discovery Client.
-Для юнит-тестов подключены JUnit Jupiter и Mockito.
+## 📌 Описание
 
-Юнит-тесты и сборка:
+Сервис предназначен для работы с отелями и номерами. На текущем этапе созданы
+стартовый класс Spring Boot, базовая конфигурация, сборка JAR и Docker-образа, а также CI.
 
-```powershell
-.\gradlew.bat test bootJar
-```
+---
 
-Для запуска приложения нужна база PostgreSQL. Укажите
-`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
-в окружении, затем выполните `.\gradlew.bat bootRun`.
-Пароли в репозиторий не добавляйте.
+## 📘 Документация по процессам
 
-Задача Gradle `test` предназначена для юнит-тестов без Spring-контекста
-и подключения к БД. Тесты размещаются в `src/test/java`.
-Пока тестовых классов нет, задача завершается с `NO-SOURCE`.
+- ### [GitHub Flow](docs/github_flow/index.md)
 
-Порт приложения: `8082`. Eureka по умолчанию ожидается по адресу
-`http://localhost:8761/eureka/`.
+---
 
-## Docker
+## 🛠️ Стек технологий
 
-Исполняемый JAR всегда называется `build/libs/app.jar`; обычный библиотечный
-JAR не собирается. Сначала соберите JAR, затем образ:
+- ☕ Java 21 (язык разработки)
+- 🌱 Spring Boot 4.1.2 и Spring Web MVC (основа приложения)
+- 🐘 PostgreSQL и Spring Data JPA (работа с базой данных)
+- 🔐 Spring Security OAuth2 Resource Server (зависимости для работы с JWT)
+- ✅ Bean Validation (валидация данных)
+- 🔎 Spring Cloud 2025.1.4 и Eureka Discovery Client (регистрация сервисов)
+- 🐘 Gradle 9.5.1 с Kotlin DSL (сборка)
+- 🧪 JUnit Jupiter и Mockito (юнит-тесты)
+- 🐳 Docker и GitHub Actions (сборка образа и CI)
 
-```powershell
+---
+
+## 🚀 Локальный запуск
+
+1. Запустить PostgreSQL, создать отдельную базу сервиса и узнать параметры подключения
+
+   | Параметр | Где взять |
+   |----------|-----------|
+   | `<db_url>` | JDBC URL PostgreSQL, например `jdbc:postgresql://localhost:5432/hbs_hotel` |
+   | `<db_username>` | Имя пользователя PostgreSQL |
+   | `<db_password>` | Пароль пользователя PostgreSQL |
+
+   Для регистрации приложения сначала запустить [hbs-eureka-server](https://github.com/Dikov-Hotel-Booking-System/hbs-eureka-server).
+
+2. Создать папку `config` в корне проекта и файл `config/application.yaml` с содержимым ниже
+   ```yaml
+   server:
+     port: 8082
+
+   spring:
+     datasource:
+       url: "<db_url>"
+       username: "<db_username>"
+       password: "<db_password>"
+
+   eureka:
+     client:
+       service-url:
+         defaultZone: "http://localhost:8761/eureka/"
+   ```
+
+   Локальный файл переопределяет значения из `src/main/resources/application.yaml`
+   через `spring.config.import: optional:file:./config/application.yaml`.
+   Папка `config` исключена из Git.
+
+   В локальном файле указываются реальные параметры своей базы данных.
+
+3. Из корня проекта выполнить команду
+   ```shell
+   .\gradlew.bat bootRun
+   ```
+
+   Порт приложения по умолчанию: `8082`. Его можно изменить в локальном файле настроек.
+
+---
+
+## 📦 Сборка JAR и Docker-образа
+
+```shell
 .\gradlew.bat bootJar
 docker build --tag hbs-hotel-service:local .
 ```
 
-Dockerfile использует JRE 21 и запускает приложение от UID/GID `10001:10001`.
-В образ копируется уже собранный JAR.
+Исполняемый JAR находится в `build/libs/app.jar`. Dockerfile использует JRE 21
+и запускает приложение от пользователя `10001:10001`.
 
-## GitHub Actions
+---
 
-Workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) запускается
-при push в `master` и `feature/**`, для PR в `master`
-и вручную через `workflow_dispatch`. Содержимое workflow одинаково
-во всех четырёх репозиториях.
+## 🔗 Полезные ссылки
 
-Рабочий поток: `feature/<name>` → PR → `master`.
-Проверка `Branch policy` отклоняет PR из других исходных веток.
-Правила защиты для GitHub и порядок первоначальной настройки описаны
-в [GitHub Flow](docs/github_flow/index.md).
+| Ссылка | Примечание |
+|--------|------------|
+| [Репозиторий](https://github.com/Dikov-Hotel-Booking-System/hbs-hotel-service) | Исходный код сервиса |
+| [GitHub Actions](https://github.com/Dikov-Hotel-Booking-System/hbs-hotel-service/actions) | Запуски CI |
 
-1. `build` выполняет `test bootJar`: запускает юнит-тесты и собирает JAR.
-2. `docker` получает тот же JAR через artifact и собирает образ с тегом SHA коммита.
+---
 
-JAR и отчёты юнит-тестов сохраняются в artifacts на 7 дней. Образ проверяется сборкой,
-без публикации в registry. Деплоя и Kubernetes-манифестов нет.
+## 🧪 Тестирование сервиса
 
-Для юнит-тестов внешние сервисы и секреты не требуются.
+Юнит-тесты запускаются командой
+```shell
+.\gradlew.bat test
+```
+
+Для них используются JUnit Jupiter и Mockito. Подключение к PostgreSQL
+и запуск Spring-контекста не требуются. Пока тестовых классов нет,
+задача `test` завершается с `NO-SOURCE`.
+
+---

@@ -1,0 +1,8 @@
+spring:
+  config:
+    import: optional:file:./config/application.yaml
+  application:
+    name: hbs-hotel-service
+
+server:
+  port: 8082
