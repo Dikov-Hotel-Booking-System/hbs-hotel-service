@@ -18,7 +18,7 @@ import static ru.mephi.hbs.hotel.enums.QueryPath.GET_HOTELS;
 @Repository
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class JdbcGetHotelsRepository implements GetHotelsRepository {
+public class GetHotelsJdbcRepository implements GetHotelsRepository {
 
     JdbcClient jdbcClient;
 
