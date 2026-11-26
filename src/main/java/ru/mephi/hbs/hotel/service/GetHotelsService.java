@@ -34,6 +34,7 @@ public class GetHotelsService {
     public GetHotelsApiResponse getHotels(@Nonnull GetHotelsApiRequest params) {
         int page = requireNonNullElse(params.page(), DEFAULT_PAGE);
         int size = requireNonNullElse(params.size(), DEFAULT_SIZE);
+
         List<HotelItemApiResponse> hotels = getHotelsRepository.getHotels(GetHotelsSqlRequest.builder()
                         .limit(size)
                         .offset((long) page * size)

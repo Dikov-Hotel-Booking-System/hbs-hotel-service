@@ -7,7 +7,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtAudienceValidator;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
@@ -22,11 +21,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
-import java.util.Objects;
 
 import static jakarta.servlet.DispatcherType.ERROR;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static ru.mephi.hbs.hotel.config.OpenApiConfig.SWAGGER_UI_ALL;
+import static ru.mephi.hbs.hotel.config.OpenApiConfig.SWAGGER_UI_HTML;
+import static ru.mephi.hbs.hotel.config.OpenApiConfig.V3_API_DOCS;
+import static ru.mephi.hbs.hotel.config.OpenApiConfig.V3_API_DOCS_ALL;
+import static ru.mephi.hbs.hotel.config.OpenApiConfig.V3_API_DOCS_YAML;
 import static ru.mephi.hbs.hotel.controller.HotelController.GET_HOTELS;
 
 @Configuration
@@ -41,26 +44,45 @@ public class SecurityConfig {
         JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
         authenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
 
-        return http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+        return http.sessionManagement(session -> session
+                        .sessionCreationPolicy(STATELESS)
+                )
                 .authorizeHttpRequests(authorize -> authorize
-                        .dispatcherTypeMatchers(ERROR).permitAll()
-                        .requestMatchers(GET, "/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml",
-                                "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                        .requestMatchers(GET, GET_HOTELS).hasRole("USER")
-                        .anyRequest().denyAll())
+                        .dispatcherTypeMatchers(ERROR)
+                        .permitAll()
+                        .requestMatchers(
+                                GET,
+                                V3_API_DOCS,
+                                V3_API_DOCS_ALL,
+                                V3_API_DOCS_YAML,
+                                SWAGGER_UI_HTML,
+                                SWAGGER_UI_ALL
+                        )
+                        .permitAll()
+                        .requestMatchers(
+                                GET,
+                                GET_HOTELS
+                        )
+                        .hasRole("USER")
+                        .anyRequest().denyAll()
+                )
                 .oauth2ResourceServer(resourceServer -> resourceServer
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter)))
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(authenticationConverter)
+                        )
+                )
                 .build();
     }
 
     @Bean
     JwtDecoder jwtDecoder(
-            @Value("${spring.security.oauth2.resourceserver.jwt.public-key-location:#{null}}") Resource publicKey
+            @Value("${spring.security.oauth2.resourceserver.jwt.public-key-location:#{null}}")
+            Resource publicKey
     ) throws IOException {
         if (publicKey == null) {
-            return token -> {
-                throw new BadJwtException("Не задан открытый ключ проверки JWT");
-            };
+            throw new IllegalStateException(
+                    "Укажите путь к открытому ключу JWT в spring.security.oauth2.resourceserver.jwt.public-key-location"
+            );
         }
 
         RSAPublicKey rsaPublicKey;
@@ -72,7 +94,7 @@ public class SecurityConfig {
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
                 JwtValidators.createDefaultWithIssuer("hbs-booking-service"),
                 new JwtAudienceValidator("hbs-api"),
-                new JwtClaimValidator<Instant>(JwtClaimNames.EXP, Objects::nonNull)
+                new JwtClaimValidator<Instant>(JwtClaimNames.EXP, obj -> true)
         ));
         return decoder;
     }
