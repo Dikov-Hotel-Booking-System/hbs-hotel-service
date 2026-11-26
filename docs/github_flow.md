@@ -48,6 +48,6 @@
 Проверки обязательны для слияния. GitHub блокирует прямой и принудительный push
 в `master`, а также удаление ветки. CI собирает образ без публикации и деплоя.
 
-[Workflow CI](../../.github/workflows/ci.yml) ·
-[Проверка PR](../../.github/workflows/branch-policy.yml) ·
-[Правило защиты master](../../.github/rulesets/master.json)
+[Workflow CI](../.github/workflows/ci.yml) ·
+[Проверка PR](../.github/workflows/branch-policy.yml) ·
+[Правило защиты master](../.github/rulesets/master.json)

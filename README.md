@@ -14,7 +14,7 @@
 
 - ### [Endpoints](docs/endpoints/index.md)
 - ### [OpenAPI](docs/openapi.yaml)
-- ### [GitHub Flow](docs/github_flow/index.md)
+- ### [GitHub Flow](docs/github_flow.md)
 - ### [Database](docs/database/index.md)
 
 ---
