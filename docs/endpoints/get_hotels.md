@@ -7,6 +7,7 @@
 | Характеристика | Значение |
 |----------------|----------|
 | URL | `/api/hotels` |
+| URL через API Gateway | `http://localhost:8080/api/hotels` |
 | Метод | `GET` |
 | Доступ | JWT с ролью `USER` |
 | Код успешного ответа | `200` |
@@ -17,8 +18,6 @@
 |----------|-----|---------------------|--------------|---------------------|
 | `page` | `number` | ❌ | `0` | Целое число от `0` |
 | `size` | `number` | ❌ | `20` | Целое число от `1` до `100` |
-
-Недопустимое значение параметра возвращает `400`.
 
 ## 📤 Успешный ответ
 
@@ -56,6 +55,28 @@
 }
 ```
 
+## ⚠️ Ошибки
+
+| HTTP-статус | `error_code` | Описание |
+|-------------|--------------|----------|
+| `400` | `9001` | Некорректные параметры пагинации. `field_errors` содержит список полей и сообщений. |
+| `500` | `9999` | Внутренняя ошибка сервиса. Ответ содержит `error_code` и `message`. |
+
+Ответ при запросе с `page=-1`
+
+```json
+{
+  "error_code": 9001,
+  "message": "ошибка валидации запроса",
+  "field_errors": [
+    {
+      "field": "page",
+      "message": "номер страницы не может быть меньше 0"
+    }
+  ]
+}
+```
+
 ## 🔒 Проверка доступа
 
 Запрос передаёт заголовок `Authorization: Bearer <токен>`. Сервис проверяет подпись по открытому ключу, срок действия, `iss=hbs-booking-service` и `aud=hbs-api`. Для запроса требуется `role=USER`.
@@ -79,12 +100,14 @@ spring:
 ```mermaid
 sequenceDiagram
     actor User as Пользователь
+    participant Gateway as API Gateway
     participant API as HotelController
     participant Service as GetHotelsService
     participant Repository as GetHotelsRepository
     participant DB as PostgreSQL
     participant Mapper as ToApiMapper
-    User ->> API: GET /api/hotels?page=0&size=20
+    User ->> Gateway: GET /api/hotels?page=0&size=20
+    Gateway ->> API: GET /api/hotels?page=0&size=20
     API ->> Service: getHotels(GetHotelsApiRequest)
     Service ->> Repository: getHotels(GetHotelsSqlRequest)
     Repository ->> DB: Запрос страницы отелей
@@ -99,7 +122,8 @@ sequenceDiagram
     DB -->> Repository: Общее число отелей
     Repository -->> Service: Число отелей
     Service -->> API: GetHotelsApiResponse
-    API -->> User: 200 OK
+    API -->> Gateway: 200 OK
+    Gateway -->> User: 200 OK
 ```
 
 ## 🧠 Алгоритм

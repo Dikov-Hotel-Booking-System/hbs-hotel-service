@@ -12,8 +12,6 @@ paths:
       tags:
       - hotel-controller
       summary: получение страницы отелей
-      description: "Для доступа нужен JWT с ролью USER, издателем hbs-booking-service\
-        \ и аудиторией hbs-api."
       operationId: getHotels
       parameters:
       - name: page
@@ -34,24 +32,67 @@ paths:
           maximum: 100
           minimum: 1
       responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorApiResponse"
         "200":
-          description: страница отелей
+          description: OK
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetHotelsApiResponse"
         "400":
-          description: недопустимые параметры пагинации
+          description: ошибка валидации запроса
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/ValidationErrorApiResponse"
         "401":
           description: JWT отсутствует или не прошёл проверку
         "403":
-          description: JWT не содержит роль USER
+          description: недостаточно прав для вызова операции
 components:
   schemas:
+    FieldErrorItemApiResponse:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+      required:
+      - field
+      - message
+    ValidationErrorApiResponse:
+      type: object
+      properties:
+        error_code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        field_errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldErrorItemApiResponse"
+      required:
+      - error_code
+      - field_errors
+      - message
+    ErrorApiResponse:
+      type: object
+      properties:
+        error_code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+      - error_code
+      - message
     GetHotelsApiResponse:
       type: object
       properties:
