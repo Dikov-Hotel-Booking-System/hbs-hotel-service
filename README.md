@@ -6,13 +6,14 @@
 
 ## 📌 Описание
 
-Сервис предназначен для работы с отелями и номерами. На текущем этапе созданы
-стартовый класс Spring Boot, базовая конфигурация, миграции БД, сборка JAR и Docker-образа, а также CI.
+Сервис предназначен для работы с отелями и номерами. Реализовано получение списка отелей.
 
 ---
 
 ## 📘 Документация по процессам
 
+- ### [Endpoints](docs/endpoints/index.md)
+- ### [OpenAPI](docs/openapi.yaml)
 - ### [GitHub Flow](docs/github_flow/index.md)
 - ### [Database](docs/database/index.md)
 
@@ -22,7 +23,7 @@
 
 - ☕ Java 21 (язык разработки)
 - 🌱 Spring Boot 4.1.2 и Spring Web MVC (основа приложения)
-- 🐘 PostgreSQL, Spring Data JPA и Liquibase (работа с базой данных и миграции)
+- 🐘 PostgreSQL, JdbcClient и Liquibase (работа с базой данных и миграции)
 - 🔐 Spring Security OAuth2 Resource Server (зависимости для работы с JWT)
 - ✅ Bean Validation (валидация данных)
 - 🔎 Spring Cloud 2025.1.4 и Eureka Discovery Client (регистрация сервисов)
@@ -72,6 +73,19 @@
    Liquibase применяет миграции к базе при запуске сервиса.
 
    При запуске Spring Boot выбирает свободный порт. Его видно в журнале запуска и в Eureka.
+   Swagger UI доступен по адресу `http://localhost:<порт>/swagger-ui/index.html`.
+
+---
+
+## 📄 Генерация OpenAPI
+
+При запущенном PostgreSQL и настроенном `config/application.yaml` выполнить из корня проекта.
+
+```powershell
+.\gradlew.bat generateOpenApiDocs
+```
+
+Задача временно запускает Hotel Service на порту `18082` и записывает описание в `docs/openapi.yaml`.
 
 ---
 
