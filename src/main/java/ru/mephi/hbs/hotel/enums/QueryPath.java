@@ -12,7 +12,9 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 public enum QueryPath {
 
-    GET_HOTELS("queries/get_hotels/get_hotels.sql");
+    GET_HOTELS("queries/get_hotels/get_hotels.sql"),
+    COUNT_HOTELS("queries/get_hotels/count_hotels.sql"),
+    ;
 
     @Nonnull
     String sql;

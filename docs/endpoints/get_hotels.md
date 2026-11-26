@@ -1,6 +1,6 @@
 # 🌐 Получение списка отелей
 
-> Возвращает список отелей в порядке возрастания идентификатора. Если отелей нет, возвращает пустой массив.
+> Возвращает страницу отелей в порядке возрастания идентификатора.
 
 ## ⚙️ Основные характеристики
 
@@ -11,9 +11,28 @@
 | Доступ | JWT с ролью `USER` |
 | Код успешного ответа | `200` |
 
+## 📥 Параметры запроса
+
+| Параметр | Тип | Обязательность поля | По умолчанию | Допустимые значения |
+|----------|-----|---------------------|--------------|---------------------|
+| `page` | `number` | ❌ | `0` | Целое число от `0` |
+| `size` | `number` | ❌ | `20` | Целое число от `1` до `100` |
+
+Недопустимое значение параметра возвращает `400`.
+
 ## 📤 Успешный ответ
 
-Тело ответа — JSON-массив. Каждый элемент содержит следующие поля.
+| Поле JSON | Тип | Обязательность поля | Описание |
+|-----------|-----|---------------------|----------|
+| `page` | `number` | ✅ | Номер запрошенной страницы |
+| `size` | `number` | ✅ | Размер страницы |
+| `total_elements` | `number` | ✅ | Общее число отелей |
+| `total_pages` | `number` | ✅ | Общее число страниц |
+| `hotels` | `array` | ✅ | Отели на запрошенной странице |
+
+При пустой базе `total_pages` равно `0`. Если на запрошенной странице нет отелей, `hotels` содержит пустой массив.
+
+Поля элемента массива `hotels` описаны ниже.
 
 | Поле JSON | Тип | Обязательность поля | Описание |
 |-----------|-----|---------------------|----------|
@@ -22,13 +41,19 @@
 | `address` | `string` | ✅ | Адрес отеля |
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "<название_отеля>",
-    "address": "<адрес_отеля>"
-  }
-]
+{
+  "page": 0,
+  "size": 20,
+  "total_elements": 1,
+  "total_pages": 1,
+  "hotels": [
+    {
+      "id": 1,
+      "name": "<название_отеля>",
+      "address": "<адрес_отеля>"
+    }
+  ]
+}
 ```
 
 ## 🔒 Проверка доступа
@@ -58,18 +83,29 @@ sequenceDiagram
     participant Service as GetHotelsService
     participant Repository as GetHotelsRepository
     participant DB as PostgreSQL
-    User ->> API: GET /api/hotels
-    API ->> Service: getHotels()
-    Service ->> Repository: getHotels()
-    Repository ->> DB: Запрос списка отелей
+    participant Mapper as ToApiMapper
+    User ->> API: GET /api/hotels?page=0&size=20
+    API ->> Service: getHotels(GetHotelsApiRequest)
+    Service ->> Repository: getHotels(GetHotelsSqlRequest)
+    Repository ->> DB: Запрос страницы отелей
     DB -->> Repository: Строки таблицы hotels
-    Repository -->> Service: Список GetHotelsEntityResponse
-    Service -->> API: Список HotelResponse
+    Repository -->> Service: Список GetHotelsSqlResponse
+    loop Для каждой записи
+        Service ->> Mapper: toApi(row)
+        Mapper -->> Service: HotelItemApiResponse
+    end
+    Service ->> Repository: countHotels()
+    Repository ->> DB: Подсчёт отелей
+    DB -->> Repository: Общее число отелей
+    Repository -->> Service: Число отелей
+    Service -->> API: GetHotelsApiResponse
     API -->> User: 200 OK
 ```
 
 ## 🧠 Алгоритм
 
-1. Репозиторий читает отели в порядке `id` через `JdbcClient`. [Запрос к таблице hotels](../../src/main/resources/queries/get_hotels/get_hotels.sql)
-2. Сервис преобразует строки результата в `HotelResponse`.
-3. Контроллер возвращает список со статусом `200`.
+1. Сервис определяет `page` и `size`, затем вычисляет смещение `page * size`.
+2. Репозиторий читает страницу в порядке `id`. [Запрос страницы](../../src/main/resources/queries/get_hotels/get_hotels.sql)
+3. Маппер преобразует каждую строку в `HotelItemApiResponse`.
+4. Репозиторий считает общее число отелей в той же транзакции. Сервис вычисляет общее число страниц. [Подсчёт отелей](../../src/main/resources/queries/get_hotels/count_hotels.sql)
+5. Контроллер возвращает страницу отелей со статусом `200`.

@@ -13,6 +13,7 @@
 ## 📘 Документация по процессам
 
 - ### [Endpoints](docs/endpoints/index.md)
+- ### [OpenAPI](docs/openapi.yaml)
 - ### [GitHub Flow](docs/github_flow/index.md)
 - ### [Database](docs/database/index.md)
 
@@ -73,6 +74,18 @@
 
    При запуске Spring Boot выбирает свободный порт. Его видно в журнале запуска и в Eureka.
    Swagger UI доступен по адресу `http://localhost:<порт>/swagger-ui/index.html`.
+
+---
+
+## 📄 Генерация OpenAPI
+
+При запущенном PostgreSQL и настроенном `config/application.yaml` выполнить из корня проекта.
+
+```powershell
+.\gradlew.bat generateOpenApiDocs
+```
+
+Задача временно запускает Hotel Service на порту `18082` и записывает описание в `docs/openapi.yaml`.
 
 ---
 

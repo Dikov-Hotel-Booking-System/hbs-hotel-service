@@ -26,7 +26,7 @@ import java.util.Objects;
 import static jakarta.servlet.DispatcherType.ERROR;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static ru.mephi.hbs.hotel.controller.HotelController.HOTELS;
+import static ru.mephi.hbs.hotel.controller.HotelController.GET_HOTELS;
 
 @Configuration
 public class SecurityConfig {
@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(ERROR).permitAll()
                         .requestMatchers(GET, "/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml",
                                 "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                        .requestMatchers(GET, HOTELS).hasRole("USER")
+                        .requestMatchers(GET, GET_HOTELS).hasRole("USER")
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter)))

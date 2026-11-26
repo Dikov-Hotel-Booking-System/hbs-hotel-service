@@ -2,6 +2,7 @@ plugins {
 	java
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependency.management)
+	alias(libs.plugins.springdoc.openapi.gradle.plugin)
 }
 
 group = "ru.mephi"
@@ -44,6 +45,24 @@ dependencyManagement {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+val openApiPort = 18082
+val openApiConfig = layout.projectDirectory.file("config/application.yaml").asFile.toURI()
+
+openApi {
+	apiDocsUrl.set("http://127.0.0.1:$openApiPort/v3/api-docs.yaml")
+	outputDir.set(layout.projectDirectory.dir("docs").asFile)
+	outputFileName.set("openapi.yaml")
+	waitTimeInSeconds.set(30)
+	customBootRun {
+		args.set(listOf(
+			"--server.address=127.0.0.1",
+			"--server.port=$openApiPort",
+			"--spring.config.additional-location=optional:$openApiConfig",
+			"--eureka.client.enabled=false"
+		))
+	}
 }
 
 tasks.bootJar {
