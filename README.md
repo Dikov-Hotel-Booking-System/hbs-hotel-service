@@ -22,7 +22,7 @@
 
 - ☕ Java 21 (язык разработки)
 - 🌱 Spring Boot 4.1.2 и Spring Web MVC (основа приложения)
-- 🐘 PostgreSQL, Spring Data JPA и Liquibase (работа с базой данных и миграции)
+- 🐘 PostgreSQL, JdbcClient и Liquibase (работа с базой данных и миграции)
 - 🔐 Spring Security OAuth2 Resource Server (зависимости для работы с JWT)
 - ✅ Bean Validation (валидация данных)
 - 🔎 Spring Cloud 2025.1.4 и Eureka Discovery Client (регистрация сервисов)
@@ -72,6 +72,7 @@
    Liquibase применяет миграции к базе при запуске сервиса.
 
    При запуске Spring Boot выбирает свободный порт. Его видно в журнале запуска и в Eureka.
+   Swagger UI доступен по адресу `http://localhost:<порт>/swagger-ui/index.html`.
 
 ---
 

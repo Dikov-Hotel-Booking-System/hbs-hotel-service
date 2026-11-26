@@ -20,11 +20,15 @@ repositories {
 
 dependencies {
 	implementation(libs.spring.boot.starter.data.jpa)
+	implementation(libs.spring.boot.starter.jdbc)
 	implementation(libs.spring.boot.starter.liquibase)
 	implementation(libs.spring.boot.starter.security.oauth2.resource.server)
 	implementation(libs.spring.boot.starter.validation)
 	implementation(libs.spring.boot.starter.webmvc)
 	implementation(libs.spring.cloud.starter.netflix.eureka.client)
+	implementation(libs.springdoc.openapi.starter.webmvc.ui)
+	compileOnly(libs.lombok)
+	annotationProcessor(libs.lombok)
 	runtimeOnly(libs.postgresql)
 	testImplementation(libs.junit.jupiter)
 	testImplementation(libs.mockito.junit.jupiter)

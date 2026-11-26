@@ -56,11 +56,20 @@ sequenceDiagram
     actor User as Пользователь
     participant API as HotelController
     participant Service as GetHotelsService
-    participant Repository as HotelRepository
+    participant Repository as GetHotelsRepository
+    participant DB as PostgreSQL
     User ->> API: GET /api/hotels
     API ->> Service: getHotels()
-    Service ->> Repository: Чтение отелей по порядку id
-    Repository -->> Service: Отели
+    Service ->> Repository: getHotels()
+    Repository ->> DB: Запрос списка отелей
+    DB -->> Repository: Строки таблицы hotels
+    Repository -->> Service: Список GetHotelsEntityResponse
     Service -->> API: Список HotelResponse
     API -->> User: 200 OK
 ```
+
+## 🧠 Алгоритм
+
+1. Репозиторий читает отели в порядке `id` через `JdbcClient`. [Запрос к таблице hotels](../../src/main/resources/queries/get_hotels/get_hotels.sql)
+2. Сервис преобразует строки результата в `HotelResponse`.
+3. Контроллер возвращает список со статусом `200`.

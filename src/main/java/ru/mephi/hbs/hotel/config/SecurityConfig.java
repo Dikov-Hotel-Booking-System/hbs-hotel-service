@@ -43,6 +43,8 @@ public class SecurityConfig {
         return http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
+                        .requestMatchers(GET, "/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml",
+                                "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .requestMatchers(GET, HOTELS).hasRole("USER")
                         .anyRequest().denyAll())
                 .oauth2ResourceServer(resourceServer -> resourceServer
