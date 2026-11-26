@@ -9,6 +9,10 @@ spring:
 server:
   port: 0
 
+springdoc:
+  default-produces-media-type: application/json
+  override-with-generic-response: false
+
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.uuid}}

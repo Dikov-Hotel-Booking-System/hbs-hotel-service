@@ -12,8 +12,6 @@ paths:
       tags:
       - hotel-controller
       summary: получение страницы отелей
-      description: "Для доступа нужен JWT с ролью USER, издателем hbs-booking-service\
-        \ и аудиторией hbs-api."
       operationId: getHotels
       parameters:
       - name: page
@@ -35,21 +33,11 @@ paths:
           minimum: 1
       responses:
         "200":
-          description: страница отелей
+          description: OK
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetHotelsApiResponse"
-        "400":
-          description: недопустимые параметры пагинации
-          content:
-            application/json:
-              schema:
-                type: object
-        "401":
-          description: JWT отсутствует или не прошёл проверку
-        "403":
-          description: JWT не содержит роль USER
 components:
   schemas:
     GetHotelsApiResponse:

@@ -7,6 +7,7 @@
 | Характеристика | Значение |
 |----------------|----------|
 | URL | `/api/hotels` |
+| URL через API Gateway | `http://localhost:8080/api/hotels` |
 | Метод | `GET` |
 | Доступ | JWT с ролью `USER` |
 | Код успешного ответа | `200` |
@@ -17,8 +18,6 @@
 |----------|-----|---------------------|--------------|---------------------|
 | `page` | `number` | ❌ | `0` | Целое число от `0` |
 | `size` | `number` | ❌ | `20` | Целое число от `1` до `100` |
-
-Недопустимое значение параметра возвращает `400`.
 
 ## 📤 Успешный ответ
 
@@ -60,9 +59,6 @@
 
 Запрос передаёт заголовок `Authorization: Bearer <токен>`. Сервис проверяет подпись по открытому ключу, срок действия, `iss=hbs-booking-service` и `aud=hbs-api`. Для запроса требуется `role=USER`.
 
-- `401` — токен отсутствует или не прошёл проверку.
-- `403` — действительный токен без роли `USER`.
-
 Путь к открытому ключу RSA в формате PEM задаётся в локальном `config/application.yaml`.
 
 ```yaml
@@ -79,12 +75,14 @@ spring:
 ```mermaid
 sequenceDiagram
     actor User as Пользователь
+    participant Gateway as API Gateway
     participant API as HotelController
     participant Service as GetHotelsService
     participant Repository as GetHotelsRepository
     participant DB as PostgreSQL
     participant Mapper as ToApiMapper
-    User ->> API: GET /api/hotels?page=0&size=20
+    User ->> Gateway: GET /api/hotels?page=0&size=20
+    Gateway ->> API: GET /api/hotels?page=0&size=20
     API ->> Service: getHotels(GetHotelsApiRequest)
     Service ->> Repository: getHotels(GetHotelsSqlRequest)
     Repository ->> DB: Запрос страницы отелей
@@ -99,7 +97,8 @@ sequenceDiagram
     DB -->> Repository: Общее число отелей
     Repository -->> Service: Число отелей
     Service -->> API: GetHotelsApiResponse
-    API -->> User: 200 OK
+    API -->> Gateway: 200 OK
+    Gateway -->> User: 200 OK
 ```
 
 ## 🧠 Алгоритм

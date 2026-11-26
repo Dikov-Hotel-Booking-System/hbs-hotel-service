@@ -14,7 +14,7 @@
 
 - ### [Endpoints](docs/endpoints/index.md)
 - ### [OpenAPI](docs/openapi.yaml)
-- ### [GitHub Flow](docs/github_flow/index.md)
+- ### [GitHub Flow](docs/github_flow.md)
 - ### [Database](docs/database/index.md)
 
 ---
@@ -52,6 +52,11 @@
        url: "<db_url>"
        username: "<db_username>"
        password: "<db_password>"
+     security:
+       oauth2:
+         resourceserver:
+           jwt:
+             public-key-location: "file:<путь_к_открытому_ключу>"
 
    eureka:
      client:
@@ -63,7 +68,8 @@
    через `spring.config.import: optional:file:./config/application.yaml`.
    Папка `config` исключена из Git.
 
-   В локальном файле указываются реальные параметры своей базы данных.
+   В локальном файле указываются параметры своей базы данных и путь к открытому ключу RSA в формате PEM.
+   Ключ должен соответствовать ключу, которым `hbs-booking-service` подписывает JWT. Без открытого ключа Hotel Service завершит запуск с ошибкой конфигурации.
 
 3. Из корня проекта выполнить команду
    ```shell
@@ -79,13 +85,13 @@
 
 ## 📄 Генерация OpenAPI
 
-При запущенном PostgreSQL и настроенном `config/application.yaml` выполнить из корня проекта.
+При запущенном PostgreSQL и настроенном подключении к базе в `config/application.yaml` выполнить из корня проекта.
 
 ```powershell
 .\gradlew.bat generateOpenApiDocs
 ```
 
-Задача временно запускает Hotel Service на порту `18082` и записывает описание в `docs/openapi.yaml`.
+Задача создаёт отдельный открытый ключ в `build`, запускает Hotel Service на порту `18082` и записывает описание в `docs/openapi.yaml`.
 
 ---
 
