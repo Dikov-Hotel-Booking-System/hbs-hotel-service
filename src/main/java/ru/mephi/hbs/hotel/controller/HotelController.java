@@ -13,7 +13,6 @@ import ru.mephi.hbs.hotel.model.api.response.GetHotelsApiResponse;
 import ru.mephi.hbs.hotel.service.GetHotelsService;
 
 import static lombok.AccessLevel.PRIVATE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class HotelController {
 
     GetHotelsService getHotelsService;
 
-    @GetMapping(value = GET_HOTELS, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(GET_HOTELS)
     @Operation(summary = "получение страницы отелей")
     public ResponseEntity<GetHotelsApiResponse> getHotels(@ModelAttribute @Valid GetHotelsApiRequest request) {
         return ResponseEntity.ok(getHotelsService.getHotels(request));

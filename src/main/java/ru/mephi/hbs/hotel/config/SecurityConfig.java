@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.util.Objects;
@@ -63,7 +64,7 @@ public class SecurityConfig {
         }
 
         RSAPublicKey rsaPublicKey;
-        try (var input = publicKey.getInputStream()) {
+        try (InputStream input = publicKey.getInputStream()) {
             rsaPublicKey = RsaKeyConverters.x509().convert(input);
         }
 
